@@ -1,0 +1,112 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Generator : MonoBehaviour
+{
+    private List<Vector2> points;
+    private List<GameObject> pointsInstantiated;
+
+    [SerializeField] private GameObject cube;
+    [SerializeField] private Ball ball;
+
+    private void Start()
+    {
+        points = new List<Vector2>();
+        pointsInstantiated = new List<GameObject>();
+    }
+
+    private void Update()
+    {
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    points.Add(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    StartSim();
+        //}
+    }
+
+    public void StartSim()
+    {
+        GenerateFromList(points);
+        ball.hasStarted = true;
+    }
+
+    public void EndSim()
+    {
+        while(points.Count > 0)
+        {
+            points.RemoveAt(0);
+        }
+
+        while(pointsInstantiated.Count > 0)
+        {
+            Destroy(pointsInstantiated[0]);
+            pointsInstantiated.RemoveAt(0);
+        }
+
+        pointsInstantiated = new List<GameObject>();
+        points = new List<Vector2>();
+    }
+
+    public void AddPoint(Vector2 point)
+    {
+        //if(point.x > transform.position.x + 7)
+        //{
+        //    point = new Vector2(transform.position.x + 7, point.y);
+        //}
+        //if (point.x < transform.position.x - 7)
+        //{
+        //    point = new Vector2(transform.position.x - 7, point.y);
+        //}
+        //if (point.y > transform.position.y + 7)
+        //{
+        //    point = new Vector2(point.x, transform.position.y + 7);
+        //}
+        //if (point.y < transform.position.y - 7)
+        //{
+        //    point = new Vector2(point.x, transform.position.y - 7);
+        //}
+
+        points.Add(point);
+    }
+
+    private void GenerateFromList(List<Vector2> points)
+    {
+        for(int i = 0; i < points.Count - 1; i++)
+        {
+            GenerateFrom2Points(points[i], points[i + 1]);
+        }
+    }
+
+    private void GenerateFrom2Points(Vector2 point1, Vector2 point2)
+    {
+        Vector2 position = (point1 + point2) / 2;
+
+        float x = point1.x - point2.x,
+            y = point1.y - point2.y;
+
+        if (y != 0 || x != 0)
+        {
+            float angle = 0;
+
+            if (y != 0)
+            {
+                angle = Mathf.Rad2Deg * Mathf.Atan(x / y);
+            }
+
+            GameObject next = Instantiate(cube, position, Quaternion.Euler(new Vector3(0, 0, -angle)));
+
+            next.transform.localScale = new Vector3(1, Vector3.Distance(point1, point2) * 1.25f);
+
+            pointsInstantiated.Add(next);
+        }
+    }
+    
+    public List<Vector2> GetPoints()
+    {
+        return points;
+    }
+}
