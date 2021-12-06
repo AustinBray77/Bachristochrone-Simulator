@@ -9,23 +9,12 @@ public class Generator : MonoBehaviour
 
     [SerializeField] private GameObject cube;
     [SerializeField] private Ball ball;
+    [SerializeField] private Transform endPosition;
 
     private void Start()
     {
         points = new List<Vector2>();
         pointsInstantiated = new List<GameObject>();
-    }
-
-    private void Update()
-    {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    points.Add(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        //}
-        //else if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    StartSim();
-        //}
     }
 
     public void StartSim()
@@ -53,24 +42,12 @@ public class Generator : MonoBehaviour
 
     public void AddPoint(Vector2 point)
     {
-        //if(point.x > transform.position.x + 7)
-        //{
-        //    point = new Vector2(transform.position.x + 7, point.y);
-        //}
-        //if (point.x < transform.position.x - 7)
-        //{
-        //    point = new Vector2(transform.position.x - 7, point.y);
-        //}
-        //if (point.y > transform.position.y + 7)
-        //{
-        //    point = new Vector2(point.x, transform.position.y + 7);
-        //}
-        //if (point.y < transform.position.y - 7)
-        //{
-        //    point = new Vector2(point.x, transform.position.y - 7);
-        //}
-
         points.Add(point);
+    }
+    
+    public void AddPoint(float x, float y)
+    {
+        points.Add(new Vector2(x, y));
     }
 
     private void GenerateFromList(List<Vector2> points)

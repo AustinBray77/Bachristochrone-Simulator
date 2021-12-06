@@ -45,6 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cube: {fileID: 6971240970665278572, guid: cf373fd6818402b4aa713bc3fc15a9a1, type: 3}
   ball: {fileID: 1442192982668214032}
+  endPosition: {fileID: 7527455801574067299}
 --- !u!1 &7527455801337726207
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,6 +268,7 @@ MonoBehaviour:
   maxPoints: 50
   gen: {fileID: 7527455800593910052}
   endPosition: {fileID: 7527455801574067299}
+  useAI: 1
 --- !u!1 &7527455801574067297
 GameObject:
   m_ObjectHideFlags: 0
