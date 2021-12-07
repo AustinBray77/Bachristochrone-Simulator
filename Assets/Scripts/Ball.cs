@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ using Unity.MLAgents.Actuators;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ball : Agent
 {
+    
     [HideInInspector] public bool hasStarted;
     [HideInInspector] public float time;
     [HideInInspector] public List<float> l10Times;
@@ -15,11 +17,15 @@ public class Ball : Agent
 
     private Rigidbody2D rb;
     private float pointCount;
+    private Vector3 originalPosition;
 
     [SerializeField] private Vector2 bounds;
     [SerializeField] private float maxPoints;
     [SerializeField] private Generator gen;
     [SerializeField] private Transform endPosition;
+    [SerializeField] private bool useAI;
+
+    private static string line = "";
 
     private void Start()
     {
@@ -28,13 +34,24 @@ public class Ball : Agent
         pointCount = 0;
         hasStarted = false;
         offLeftOrBottom = false;
-
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
+        originalPosition = transform.position;
     }
 
     private void Update()
     {
+        if(Input.GetKey(KeyCode.Space) && !hasStarted)
+        {
+            gen.StartSim();
+            hasStarted = true;
+            rb.gravityScale = 1;
+        } else if(Input.GetMouseButton(0))
+        {
+            Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            gen.AddPoint(point);
+        }
+
         if (hasStarted)
         {
             time += Time.deltaTime;
@@ -51,38 +68,24 @@ public class Ball : Agent
             offLeftOrBottom = true;
             Restart();
         }
-
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    hasStarted = true;
-        //    rb.gravityScale = 1;
-        //}
     }
 
+    
     public override void OnActionReceived(ActionBuffers vectorAction)
     {
+        if(!useAI)
+        {
+            Debug.LogWarning("The AI is not being used");
+            return;
+        }
+
         if (vectorAction.ContinuousActions[0] != 0 && !hasStarted && maxPoints > pointCount)
         {
             float x = vectorAction.ContinuousActions[1];
-
-            /* if(vectorAction.ContinuousActions[1] > 7)
-            {
-                x = 7;
-            } else if (vectorAction.ContinuousActions[1] < -7)
-            {
-                x = -7;
-            } */
-
             float y = vectorAction.ContinuousActions[2];
 
-            /* if (vectorAction.ContinuousActions[2] > 7)
-            {
-                y = 7;
-            }
-            else if (vectorAction.ContinuousActions[2] < -7)
-            {
-                y = -7;
-            } */
+            x = (float.IsNaN(x) || float.IsInfinity(x) || float.IsNegativeInfinity(x)) ? 0 : x;
+            y = (float.IsNaN(y) || float.IsInfinity(y) || float.IsNegativeInfinity(y)) ? 0 : y;
 
             gen.AddPoint(new Vector3(x * bounds.x, y * bounds.y) + gen.transform.position);
             pointCount++;
@@ -93,72 +96,22 @@ public class Ball : Agent
             rb.gravityScale = 1;
         }
     }
-     /*
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        continuousActions[0] = Input.GetAxis("Fire1");
-        continuousActions[1] = Input.GetAxis("Horizontal") * 7;
-        continuousActions[2] = Input.GetAxis("Vertical") * 7;
-        continuousActions[3] = Input.GetAxis("Fire2");
-        
-        if(continuousActions[0] > 7)
-        {
-            continuousActions[0] = 7;
-        } else if(continuousActions[0] < -7)
-        {
-            continuousActions[0] = -7;
-        }
-
-        if (continuousActions[1] > 7)
-        {
-            continuousActions[1] = 7;
-        }
-        else if (continuousActions[1] < -7)
-        {
-            continuousActions[1] = -7;
-        }
-
-        //Debug.Log("Calculating output");
-        //Debug.Log("Actions Decided: " + actionsOut);
-    }*/
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.position);
         sensor.AddObservation(endPosition.position);
-
-        
-
-        /*
-        Debug.Log("Setting observations");
-        Debug.Log(transform.position);
-        Debug.Log(endPosition.position);*/
-
-        /*List<Vector2> points = gen.GetPoints();
-
-        foreach(Vector2 point in points)
-        {
-            sensor.AddObservation(point);
-        }*/
     }
-
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.tag == "End")
-    //    {
-    //        Debug.Log("Here");
-    //        Restart();
-    //    }
-    //}
 
     public void Restart()
     {
         hasStarted = false;
+        float distance = Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position));
 
-        if(offLeftOrBottom)
+        if (offLeftOrBottom)
         {
-            SetReward(-Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position)) - 5);
+            SetReward(-distance - 5);
+            line += "~";
         } else if (l10Times.Count > 0)
         {
             float averageTime = 0;
@@ -171,9 +124,11 @@ public class Ball : Agent
             if (time < 10f)
             {
                 SetReward(7 + averageTime - time);
+                line += "*";
             } else
             {
-                SetReward(-Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position)));
+                SetReward(-distance);
+                line += "!";
             }
 
             if (l10Times.Count == 10)
@@ -186,10 +141,19 @@ public class Ball : Agent
             if (time < 10)
             {
                 SetReward(1 / time);
+                line += "*";
             } else
             {
-                SetReward(-Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position)));
+                SetReward(-distance);
+                line += "!";
             }
+        }
+
+        line += "Reward:" + GetCumulativeReward().ToString()+" Time:"+time.ToString()+"\n";
+
+        if(line.Length > 1000000)
+        {
+            WriteResults();
         }
 
         EndEpisode();
@@ -205,10 +169,24 @@ public class Ball : Agent
         pointCount = 0;
 
         offLeftOrBottom = false;
-        transform.position = gen.transform.position + new Vector3(-5, 5);
+        transform.position = originalPosition;
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
         rb.velocity = new Vector2(0, 0);
+    }
+
+    public void OnApplicationQuit()
+    {
+        WriteResults();
+    }
+
+    private void WriteResults()
+    {
+        Debug.Log("Writing results to output.txt");
+        using StreamWriter file = new StreamWriter("output.txt", append: true);
+        file.WriteLine(line);
+        file.Close();
+        line = "";
     }
 }

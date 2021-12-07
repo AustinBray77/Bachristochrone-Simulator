@@ -1481,6 +1481,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Training Environment
       objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSpaceType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[1]
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[2]
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
 --- !u!1001 &1600862706
