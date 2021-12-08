@@ -1067,6 +1067,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7527455800593910050, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7527455801337726206, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -1116,6 +1120,14 @@ PrefabInstance:
       value: Training Environment (1)
       objectReference: {fileID: 0}
     - target: {fileID: 7527455801337726207, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801427437750, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527455801574067297, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -1499,7 +1511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7527455801427437742, guid: fb47b2828bbda6c44a83510e8565d2d8, type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[1]

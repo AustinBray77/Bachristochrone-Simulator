@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ball : Agent
@@ -24,6 +25,7 @@ public class Ball : Agent
     [SerializeField] private Generator gen;
     [SerializeField] private Transform endPosition;
     [SerializeField] private bool useAI;
+    private BehaviorParameters behaviorParameters;
 
     private static string line = "";
 
@@ -35,6 +37,7 @@ public class Ball : Agent
         hasStarted = false;
         offLeftOrBottom = false;
         rb = GetComponent<Rigidbody2D>();
+        behaviorParameters = GetComponent<BehaviorParameters>();
         rb.gravityScale = 0;
         originalPosition = transform.position;
     }
@@ -79,7 +82,10 @@ public class Ball : Agent
             return;
         }
 
-        if (vectorAction.ContinuousActions[0] != 0 && !hasStarted && maxPoints > pointCount)
+        bool inp3Condition = vectorAction.ContinuousActions[0] >= 0.5 && behaviorParameters.BrainParameters.NumActions == 3;
+        bool inp4Condition = vectorAction.ContinuousActions[0] != 0 && behaviorParameters.BrainParameters.NumActions == 4;
+
+        if ((inp3Condition || inp4Condition) && !hasStarted && maxPoints > pointCount)
         {
             float x = vectorAction.ContinuousActions[1];
             float y = vectorAction.ContinuousActions[2];
