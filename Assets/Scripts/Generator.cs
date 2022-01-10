@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Generator : MonoBehaviour
 {
-    [SerializeField] private List<Vector2> pointsToSetTo;
     private List<Vector2> points;
     private List<GameObject> pointsInstantiated;
 
@@ -15,7 +14,7 @@ public class Generator : MonoBehaviour
 
     private void Start()
     {
-        points = new List<Vector2>(pointsToSetTo);
+        points = new List<Vector2>() { ball.transform.position - new Vector3(0, 1) };
         pointsInstantiated = new List<GameObject>();
     }
 
@@ -39,7 +38,7 @@ public class Generator : MonoBehaviour
         }
 
         pointsInstantiated = new List<GameObject>();
-        points = new List<Vector2>(pointsToSetTo);
+        points = new List<Vector2>() { ball.transform.position - new Vector3(0, 1) };
     }
 
     public void AddPoint(Vector2 point)
@@ -87,5 +86,9 @@ public class Generator : MonoBehaviour
     public List<Vector2> GetPoints()
     {
         return points;
+    }
+
+    public Vector2 LastPoint() {
+        return points[0];
     }
 }

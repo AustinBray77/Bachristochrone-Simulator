@@ -21,11 +21,12 @@ public class Ball : Agent
     private float pointCount;
     private Vector3 originalPosition;
 
-    [SerializeField] private Vector2 bounds;
     [SerializeField] private float maxPoints;
     [SerializeField] private Generator gen;
     [SerializeField] private Transform endPosition;
     [SerializeField] private bool useAI;
+    [SerializeField] private Vector2 bounds;
+    private Vector2 placementBounds;
     private BehaviorParameters behaviorParameters;
 
     private static string line = "";
@@ -46,6 +47,8 @@ public class Ball : Agent
         behaviorParameters = GetComponent<BehaviorParameters>();
         rb.gravityScale = 0;
         originalPosition = transform.position;
+        placementBounds = new Vector2((transform.position.x - endPosition.position.x) / 2 + (transform.position.x + endPosition.position.x),
+        (transform.position.y - endPosition.position.y) / 2 + (transform.position.y + endPosition.position.y));
         Debug.Log(SceneManager.GetActiveScene().name);
     }
 
@@ -119,7 +122,7 @@ public class Ball : Agent
             y = (float.IsNaN(y) || float.IsInfinity(y) || float.IsNegativeInfinity(y)) ? 0 : y;
             
             //Adds the point and increment point counter
-            gen.AddPoint(new Vector3(x * bounds.x, y * bounds.y) + gen.transform.position);
+            gen.AddPoint(new Vector3(x * placementBounds.x, y * placementBounds.y) + gen.transform.position);
             pointCount++;
         }
         //Else start the simulation if it hasn't already started
@@ -138,6 +141,7 @@ public class Ball : Agent
         sensor.AddObservation(endPosition.position);
         
         /* Add last point postion */
+        sensor.AddObservation(gen.LastPoint());
     }
 
     public void Restart()

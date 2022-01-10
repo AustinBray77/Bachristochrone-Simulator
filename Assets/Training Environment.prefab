@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 6
+    VectorObservationSize: 8
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000
     VectorActionDescriptions: []
@@ -269,6 +269,7 @@ MonoBehaviour:
   gen: {fileID: 7527455800593910052}
   endPosition: {fileID: 7527455801574067299}
   useAI: 1
+  bestPoints: []
 --- !u!1 &7527455801574067297
 GameObject:
   m_ObjectHideFlags: 0
