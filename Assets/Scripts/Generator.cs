@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Generator : MonoBehaviour
 {
+    [SerializeField] private List<Vector2> pointsToSetTo;
     private List<Vector2> points;
     private List<GameObject> pointsInstantiated;
 
@@ -13,7 +15,7 @@ public class Generator : MonoBehaviour
 
     private void Start()
     {
-        points = new List<Vector2>();
+        points = new List<Vector2>(pointsToSetTo);
         pointsInstantiated = new List<GameObject>();
     }
 
@@ -37,7 +39,7 @@ public class Generator : MonoBehaviour
         }
 
         pointsInstantiated = new List<GameObject>();
-        points = new List<Vector2>();
+        points = new List<Vector2>(pointsToSetTo);
     }
 
     public void AddPoint(Vector2 point)

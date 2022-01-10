@@ -6,11 +6,13 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+using UnityEngine.SceneManagement;
 
 //Class to control the ball object
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ball : Agent
 {
+<<<<<<< Updated upstream
     //Instance variables
     [HideInInspector] public bool hasStarted; //if the episode has started
     [HideInInspector] public float time; //current time in the episode
@@ -31,6 +33,27 @@ public class Ball : Agent
     
     //Static variables
     private static string line = ""; //Buffer for writing to the file
+=======
+    [HideInInspector] public bool hasStarted;
+    [HideInInspector] public float time;
+    [HideInInspector] public List<float> l10Times;
+    [HideInInspector] public bool offLeftOrBottom;
+
+    private Rigidbody2D rb;
+    private float pointCount;
+    private Vector3 originalPosition;
+
+    [SerializeField] private Vector2 bounds;
+    [SerializeField] private float maxPoints;
+    [SerializeField] private Generator gen;
+    [SerializeField] private Transform endPosition;
+    [SerializeField] private bool useAI;
+    private BehaviorParameters behaviorParameters;
+
+    private static string line = "";
+    private float bestTime;
+    [SerializeField] private List<Vector2> bestPoints;
+>>>>>>> Stashed changes
 
     //Method called on scene instantiation
     private void Start()
@@ -39,19 +62,25 @@ public class Ball : Agent
         l10Times = new List<float>();
         time = 0;
         pointCount = 0;
+        bestTime = 10;
         hasStarted = false;
         offLeftOrBottom = false;
         rb = GetComponent<Rigidbody2D>();
         behaviorParameters = GetComponent<BehaviorParameters>();
         rb.gravityScale = 0;
         originalPosition = transform.position;
+        Debug.Log(SceneManager.GetActiveScene().name);
     }
 
     //Method called each frame
     private void Update()
     {
+<<<<<<< Updated upstream
         //If the user hit space, start the simulation
         if(Input.GetKey(KeyCode.Space) && !hasStarted)
+=======
+        if((Input.GetKey(KeyCode.Space) || (SceneManager.GetActiveScene().name == "ExampleScene" && !useAI)) && !hasStarted)
+>>>>>>> Stashed changes
         {
             //Starts the simulation
             gen.StartSim();
@@ -97,7 +126,7 @@ public class Ball : Agent
         //If not using AI, return
         if(!useAI)
         {
-            Debug.LogWarning("The AI is not being used");
+            //Debug.LogWarning("The AI is not being used");
             return;
         }
 
@@ -140,6 +169,21 @@ public class Ball : Agent
 
     public void Restart()
     {
+        if (!offLeftOrBottom && time < 10)
+        {
+            if(time < bestTime)
+            {
+                bestTime = time;
+                bestPoints = gen.GetPoints();
+                Debug.Log("New best time! Time:" + time);
+
+                foreach (Vector2 point in bestPoints)
+                {
+                    Debug.Log(point.x + ", " + point.y);
+                }
+            }
+        }
+
         hasStarted = false;
         float distance = Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position));
 
@@ -186,7 +230,10 @@ public class Ball : Agent
 
         line += "Reward:" + GetCumulativeReward().ToString()+" Time:"+time.ToString()+"\n";
 
-        if(line.Length > 1000000)
+        if(SceneManager.GetActiveScene().name == "ExampleScene")
+        {
+            line = "";
+        } else if(line.Length > 1000000)
         {
             WriteResults();
         }
@@ -213,7 +260,10 @@ public class Ball : Agent
 
     public void OnApplicationQuit()
     {
-        WriteResults();
+        if (SceneManager.GetActiveScene().name != "ExampleScene")
+        {
+            WriteResults();
+        }
     }
 
     private void WriteResults()
