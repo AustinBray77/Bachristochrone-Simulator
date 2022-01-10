@@ -12,28 +12,6 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ball : Agent
 {
-<<<<<<< Updated upstream
-    //Instance variables
-    [HideInInspector] public bool hasStarted; //if the episode has started
-    [HideInInspector] public float time; //current time in the episode
-    [HideInInspector] public List<float> l10Times; //Last 10 successful runs
-    [HideInInspector] public bool offLeftOrBottom; //if the ball went out of bounds
-
-    private Rigidbody2D rb; // Refrence to the rigidbody on the ball
-    private float pointCount; //Number of points that have been placed
-    private Vector3 originalPosition; //Original position of the ball
-
-    [SerializeField] private Vector2 bounds; //Bounds for the environment
-    [SerializeField] private float maxPoints; //Max number of points the can be placed
-    [SerializeField] private Generator gen; //Refrence to the generator in the environment
-    [SerializeField] private Transform endPosition; //End position the ball is trying to reach
-    [SerializeField] private bool useAI; //If the environment is to use AI
-    
-    private BehaviorParameters behaviorParameters; //Refrence to the behaviour parameters on the ball
-    
-    //Static variables
-    private static string line = ""; //Buffer for writing to the file
-=======
     [HideInInspector] public bool hasStarted;
     [HideInInspector] public float time;
     [HideInInspector] public List<float> l10Times;
@@ -53,7 +31,6 @@ public class Ball : Agent
     private static string line = "";
     private float bestTime;
     [SerializeField] private List<Vector2> bestPoints;
->>>>>>> Stashed changes
 
     //Method called on scene instantiation
     private void Start()
@@ -75,12 +52,8 @@ public class Ball : Agent
     //Method called each frame
     private void Update()
     {
-<<<<<<< Updated upstream
         //If the user hit space, start the simulation
-        if(Input.GetKey(KeyCode.Space) && !hasStarted)
-=======
         if((Input.GetKey(KeyCode.Space) || (SceneManager.GetActiveScene().name == "ExampleScene" && !useAI)) && !hasStarted)
->>>>>>> Stashed changes
         {
             //Starts the simulation
             gen.StartSim();
