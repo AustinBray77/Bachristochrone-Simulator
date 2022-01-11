@@ -29,7 +29,8 @@ public class Ball : Agent
     private Vector2 placementBounds;
     private BehaviorParameters behaviorParameters;
 
-    private static string line = "";
+    //private static string line = "";
+    private static List<float> bestTimes;
     private float bestTime;
     [SerializeField] private List<Vector2> bestPoints;
 
@@ -47,8 +48,8 @@ public class Ball : Agent
         behaviorParameters = GetComponent<BehaviorParameters>();
         rb.gravityScale = 0;
         originalPosition = transform.position;
-        placementBounds = new Vector2((transform.position.x - endPosition.position.x) / 2 + (transform.position.x + endPosition.position.x),
-        (transform.position.y - endPosition.position.y) / 2 + (transform.position.y + endPosition.position.y));
+        placementBounds = new Vector2((transform.position.x - endPosition.position.x) / 2,
+        (transform.position.y - endPosition.position.y) / 2);
         Debug.Log(SceneManager.GetActiveScene().name);
     }
 
@@ -122,7 +123,7 @@ public class Ball : Agent
             y = (float.IsNaN(y) || float.IsInfinity(y) || float.IsNegativeInfinity(y)) ? 0 : y;
             
             //Adds the point and increment point counter
-            gen.AddPoint(new Vector3(x * placementBounds.x, y * placementBounds.y) + gen.transform.position);
+            gen.AddPoint(new Vector3(x * placementBounds.x  + (transform.position.x + endPosition.position.x), y * placementBounds.y  + (transform.position.y + endPosition.position.y)) + gen.transform.position);
             pointCount++;
         }
         //Else start the simulation if it hasn't already started
@@ -167,7 +168,6 @@ public class Ball : Agent
         if (offLeftOrBottom)
         {
             SetReward(-distance - 5);
-            line += "~";
         } else if (l10Times.Count > 0)
         {
             float averageTime = 0;
@@ -180,11 +180,9 @@ public class Ball : Agent
             if (time < 10f)
             {
                 SetReward(7 + averageTime - time);
-                line += "*";
             } else
             {
                 SetReward(-distance);
-                line += "!";
             }
 
             if (l10Times.Count == 10)
@@ -197,22 +195,10 @@ public class Ball : Agent
             if (time < 10)
             {
                 SetReward(1 / time);
-                line += "*";
             } else
             {
                 SetReward(-distance);
-                line += "!";
             }
-        }
-
-        line += "Reward:" + GetCumulativeReward().ToString()+" Time:"+time.ToString()+"\n";
-
-        if(SceneManager.GetActiveScene().name == "ExampleScene")
-        {
-            line = "";
-        } else if(line.Length > 1000000)
-        {
-            WriteResults();
         }
 
         EndEpisode();
@@ -220,6 +206,8 @@ public class Ball : Agent
         if (time < 10)
         {
             l10Times.Add(time);
+            bestTimes.Add(time);
+            SortBestTimes();
         }
 
         gen.EndSim();
@@ -243,12 +231,35 @@ public class Ball : Agent
         }
     }
 
+    private static void SortBestTimes() 
+    {
+        for(int i = 1; i < bestTimes.Count; i++) 
+        {
+            float n = bestTimes[i];
+            int index = i-1;
+
+            while(index >= 0 && bestTimes[index] > n) 
+            {
+                bestTimes[index+1] = bestTimes[index];
+                index--;
+            }
+
+            bestTimes[index] = n;
+        }
+    }
+
     private void WriteResults()
     {
         Debug.Log("Writing results to output.txt");
         using StreamWriter file = new StreamWriter("output.txt", append: true);
+        
+        string line = "";
+
+        foreach(float n in bestTimes) {
+            line += n + "\n";
+        }
+
         file.WriteLine(line);
         file.Close();
-        line = "";
     }
 }
