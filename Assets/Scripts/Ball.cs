@@ -17,28 +17,28 @@ public class Ball : Agent
     [HideInInspector] public List<float> l10Times;
     [HideInInspector] public bool offLeftOrBottom;
 
-    private Rigidbody2D rb;
-    private float pointCount;
-    private Vector3 originalPosition;
-
     [SerializeField] private float maxPoints;
     [SerializeField] private Generator gen;
     [SerializeField] private Transform endPosition;
     [SerializeField] private bool useAI;
     [SerializeField] private Vector2 bounds;
+    [SerializeField] private List<Vector2> bestPoints;
+
     private Vector2 placementBounds;
     private BehaviorParameters behaviorParameters;
-
-    //private static string line = "";
-    private static List<float> bestTimes;
+    private Rigidbody2D rb;
+    private float pointCount;
+    private Vector3 originalPosition;
     private float bestTime;
-    [SerializeField] private List<Vector2> bestPoints;
+
+    private static List<DataPoint<long, float>> bestTimes;
 
     //Method called on scene instantiation
     private void Start()
     {
         //Sets all variables to default values
         l10Times = new List<float>();
+        bestTimes = new List<DataPoint<long, float>>();
         time = 0;
         pointCount = 0;
         bestTime = 10;
@@ -50,6 +50,7 @@ public class Ball : Agent
         originalPosition = transform.position;
         placementBounds = new Vector2((transform.position.x - endPosition.position.x) / 2,
         (transform.position.y - endPosition.position.y) / 2);
+        Debug.Log(placementBounds.x + " " + placementBounds.y);
         Debug.Log(SceneManager.GetActiveScene().name);
     }
 
@@ -206,7 +207,7 @@ public class Ball : Agent
         if (time < 10)
         {
             l10Times.Add(time);
-            bestTimes.Add(time);
+            bestTimes.Add(new DataPoint<long, float>(new System.DateTimeOffset().ToUnixTimeMilliseconds(), time));
             SortBestTimes();
         }
 
@@ -235,7 +236,7 @@ public class Ball : Agent
     {
         for(int i = 1; i < bestTimes.Count; i++) 
         {
-            float n = bestTimes[i];
+            var n = bestTimes[i];
             int index = i-1;
 
             while(index >= 0 && bestTimes[index] > n) 
@@ -251,11 +252,11 @@ public class Ball : Agent
     private void WriteResults()
     {
         Debug.Log("Writing results to output.txt");
-        using StreamWriter file = new StreamWriter("output.txt", append: true);
+        using StreamWriter file = new StreamWriter("output.txt");
         
         string line = "";
 
-        foreach(float n in bestTimes) {
+        foreach(var n in bestTimes) {
             line += n + "\n";
         }
 
