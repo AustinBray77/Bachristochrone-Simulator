@@ -12,4 +12,9 @@ public class StartMenu : MonoBehaviour
     public void BestResults() {
         SceneManager.LoadScene("ExampleScene");
     }
+
+    public void LoadGraph() {
+        SceneManager.LoadScene("Graphs");
+    }
+
 }
