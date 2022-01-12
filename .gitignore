@@ -39,3 +39,6 @@ sysinfo.txt
 *.log
 *.nn
 venv/*
+**/results/*
+**/output.txt
+**/*.meta
