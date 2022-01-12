@@ -41,4 +41,4 @@ sysinfo.txt
 venv/*
 **/results/*
 **/output.txt
-**/*.meta
+*.meta

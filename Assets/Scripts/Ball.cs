@@ -31,14 +31,14 @@ public class Ball : Agent
     private Vector3 originalPosition;
     private float bestTime;
 
-    private static List<DataPoint<long, float>> bestTimes;
+    private static List<DataPoint<System.DateTime, float>> bestTimes;
 
     //Method called on scene instantiation
     private void Start()
     {
         //Sets all variables to default values
         l10Times = new List<float>();
-        bestTimes = new List<DataPoint<long, float>>();
+        bestTimes = new List<DataPoint<System.DateTime, float>>();
         time = 0;
         pointCount = 0;
         bestTime = 10;
@@ -48,8 +48,8 @@ public class Ball : Agent
         behaviorParameters = GetComponent<BehaviorParameters>();
         rb.gravityScale = 0;
         originalPosition = transform.position;
-        placementBounds = new Vector2((transform.position.x - endPosition.position.x) / 2,
-        (transform.position.y - endPosition.position.y) / 2);
+        placementBounds = new Vector2((transform.localPosition.x - endPosition.localPosition.x) / 2,
+        (transform.localPosition.y - endPosition.localPosition.y) / 2);
         Debug.Log(placementBounds.x + " " + placementBounds.y);
         Debug.Log(SceneManager.GetActiveScene().name);
     }
@@ -123,8 +123,11 @@ public class Ball : Agent
             x = (float.IsNaN(x) || float.IsInfinity(x) || float.IsNegativeInfinity(x)) ? 0 : x;
             y = (float.IsNaN(y) || float.IsInfinity(y) || float.IsNegativeInfinity(y)) ? 0 : y;
             
-            //Adds the point and increment point counter
-            gen.AddPoint(new Vector3(x * placementBounds.x  + (transform.position.x + endPosition.position.x), y * placementBounds.y  + (transform.position.y + endPosition.position.y)) + gen.transform.position);
+            //Adds the point and increments point counter
+            gen.AddPoint(new Vector2(
+                gen.transform.position.x + x * placementBounds.x  + (transform.localPosition.x + endPosition.localPosition.x), 
+                gen.transform.position.y + y * placementBounds.y  + (transform.localPosition.y + endPosition.localPosition.y)
+                ));
             pointCount++;
         }
         //Else start the simulation if it hasn't already started
@@ -204,20 +207,20 @@ public class Ball : Agent
 
         EndEpisode();
 
-        if (time < 10)
+        if (time < 10 && !offLeftOrBottom)
         {
             l10Times.Add(time);
-            bestTimes.Add(new DataPoint<long, float>(new System.DateTimeOffset().ToUnixTimeMilliseconds(), time));
+            bestTimes.Add(new DataPoint<System.DateTime, float>(System.DateTime.Now, time));
             SortBestTimes();
         }
-
-        gen.EndSim();
 
         time = 0;
         pointCount = 0;
 
         offLeftOrBottom = false;
         transform.position = originalPosition;
+
+        gen.EndSim();
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
@@ -239,9 +242,16 @@ public class Ball : Agent
             var n = bestTimes[i];
             int index = i-1;
 
-            while(index >= 0 && bestTimes[index] > n) 
+            while(index >= 0) 
             {
+                if(bestTimes[index] <= n)
+                {
+                    break;
+                }
+
                 bestTimes[index+1] = bestTimes[index];
+
+                if(index == 0) break; 
                 index--;
             }
 

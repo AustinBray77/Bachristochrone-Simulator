@@ -50,6 +50,7 @@ public class Generator : MonoBehaviour
         //Resets the two lists
         pointsInstantiated = new List<GameObject>();
         points = new List<Vector2>() { ball.transform.position - new Vector3(0, 1) };
+        Debug.Log(points[0]);
     }
 
     //Method called to add the point to the generator

@@ -20,7 +20,13 @@ public class DataPoint<T, U> where U : IComparable {
     public static bool operator<(DataPoint<T, U> a, DataPoint<T, U> b) =>
         a.yValue.CompareTo(b.yValue) < 0;
 
+    public static bool operator>=(DataPoint<T, U> a, DataPoint<T, U> b) =>
+        a.yValue.CompareTo(b.yValue) >= 0;
+
+    public static bool operator<=(DataPoint<T, U> a, DataPoint<T, U> b) =>
+        a.yValue.CompareTo(b.yValue) <= 0;
+
     //Override for to string
     public override string ToString() =>
-        xValue + " " + yValue;
+        xValue + "," + yValue;
 }
