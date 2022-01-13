@@ -211,7 +211,6 @@ public class Ball : Agent
         {
             l10Times.Add(time);
             bestTimes.Add(new DataPoint<System.DateTime, float>(System.DateTime.Now, time));
-            SortBestTimes();
         }
 
         time = 0;
@@ -235,28 +234,33 @@ public class Ball : Agent
         }
     }
 
-    private static void SortBestTimes() 
+    private void QSortData<T, U>(List<DataPoint<T, U>> data, int min, int max) 
+    where T : System.IComparable where U : System.IComparable
     {
-        for(int i = 1; i < bestTimes.Count; i++) 
-        {
-            var n = bestTimes[i];
-            int index = i-1;
-
-            while(index >= 0) 
-            {
-                if(bestTimes[index] <= n)
-                {
-                    break;
-                }
-
-                bestTimes[index+1] = bestTimes[index];
-
-                if(index == 0) break; 
-                index--;
-            }
-
-            bestTimes[index] = n;
+        for(int i = min + 1, j = max; i < j;) {
+                    
         }
+    }
+
+    private void Partition<T, U>(List<DataPoint<T, U>> data, int min, int max) 
+    where T : System.IComparable where U : System.IComparable
+    {
+        int swap = min;
+        DataPoint<T, U> holder;
+
+        for(int i = min + 1; i < max; i++) {
+            if(data[i] < data[min]) {
+                swap++;
+                
+                holder = data[i];
+                data[i] = data[swap];
+                data[swap] = holder;
+            }
+        }
+
+        holder = data[min];
+        data[min] = data[swap];
+        data[swap] = holder;
     }
 
     private void WriteResults()

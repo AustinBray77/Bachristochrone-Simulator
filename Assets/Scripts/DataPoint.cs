@@ -2,7 +2,8 @@
 using System;
 
 //Generic class to store a 2D data point (the yValue must be able to compare)
-public class DataPoint<T, U> where U : IComparable {
+[Serializable]
+public class DataPoint<T, U> where T : IComparable where U : IComparable {
     //Instance Refrence For X and Y values (public get, private set)
     public T xValue { get; private set; }
     public U yValue { get; private set; }
