@@ -237,12 +237,14 @@ public class Ball : Agent
     private void QSortData<T, U>(List<DataPoint<T, U>> data, int min, int max) 
     where T : System.IComparable where U : System.IComparable
     {
-        for(int i = min + 1, j = max; i < j;) {
-                    
+        if(min < max) {
+            int pivot = Partition<T, U>(data, min, max);
+            QSortData(data, min, pivot);
+            QSortData(data, pivot + 1, max);
         }
     }
 
-    private void Partition<T, U>(List<DataPoint<T, U>> data, int min, int max) 
+    private int Partition<T, U>(List<DataPoint<T, U>> data, int min, int max) 
     where T : System.IComparable where U : System.IComparable
     {
         int swap = min;
@@ -261,6 +263,8 @@ public class Ball : Agent
         holder = data[min];
         data[min] = data[swap];
         data[swap] = holder;
+
+        return swap;
     }
 
     private void WriteResults()
