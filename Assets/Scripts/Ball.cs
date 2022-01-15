@@ -270,7 +270,7 @@ public class Ball : Agent
     private void WriteResults()
     {
         Debug.Log("Writing results to output.txt");
-        using StreamWriter file = new StreamWriter("output.txt");
+        using StreamWriter file = new StreamWriter("output.txt", append: true);
         
         string line = "";
 
