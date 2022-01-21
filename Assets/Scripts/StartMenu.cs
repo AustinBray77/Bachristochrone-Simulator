@@ -4,20 +4,27 @@ using UnityEngine;
 
 public class StartMenu : MonoBehaviour
 {
+    [SerializeField] private LevelChanger fade;
+
     //loads each scene when the method is run 
-    public void StartML() {
-        LevelChanger Fade = FindObjectOfType<LevelChanger>();
-        Fade.FadeToLevel("SampleScene");
+    public void StartML()
+    {
+        fade.FadeToLevel("SampleScene");
     }
 
-    public void BestResults() {
-        LevelChanger Fade = FindObjectOfType<LevelChanger>();
-        Fade.FadeToLevel("ExampleScene");
+    public void BestResults()
+    {
+        fade.FadeToLevel("ExampleScene");
     }
 
-    public void LoadGraph() {
-        LevelChanger Fade = FindObjectOfType<LevelChanger>();
-        Fade.FadeToLevel("Graphs");
+    public void CustomPath()
+    {
+        fade.FadeToLevel("UserControlled");
+    }
+
+    public void LoadGraph()
+    {
+        fade.FadeToLevel("Graphs");
     }
 
 }

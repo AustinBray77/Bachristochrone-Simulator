@@ -9,10 +9,12 @@ public class LevelChanger : MonoBehaviour
     public Animator animator;
     private string s;
 
-    StartMenu menu = FindObjectOfType<StartMenu>();
+    [SerializeField] private StartMenu menu;
+
     public void FadeToLevel(string scene) {
         s = scene;
-        animator.SetTrigger("FadeOut");
+        //animator.SetTrigger("FadeOut");
+        SceneManager.LoadScene(s);
     }
 
     public void OnFadeComplete() {

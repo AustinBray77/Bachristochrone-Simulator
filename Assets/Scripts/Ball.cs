@@ -58,23 +58,23 @@ public class Ball : Agent
     private void Update()
     {
         //If the user hit space, start the simulation
-        if((Input.GetKey(KeyCode.Space) || (SceneManager.GetActiveScene().name == "ExampleScene" && !useAI)) && !hasStarted)
+        if ((Input.GetKey(KeyCode.Space) || (SceneManager.GetActiveScene().name == "ExampleScene" && !useAI)) && !hasStarted)
         {
             //Starts the simulation
             gen.StartSim();
             hasStarted = true;
             rb.gravityScale = 1;
-        } 
+        }
         //If the user hit the left mouse button place a point
-        else if(Input.GetMouseButton(0))
+        else if (Input.GetMouseButton(0))
         {
             //Converts mouse pos to world pos
             Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            
+
             //Places a point at that position
             gen.AddPoint(point);
         }
-        
+
         //If the episode has started...
         if (hasStarted)
         {
@@ -87,7 +87,7 @@ public class Ball : Agent
                 Restart();
             }
         }
-        
+
         //Trigger if the ball is out of bounds
         if (transform.position.x > gen.transform.position.x + bounds.x || transform.position.x < gen.transform.position.x - bounds.x ||
             transform.position.y < gen.transform.position.y - bounds.y || transform.position.y > gen.transform.position.y + bounds.y)
@@ -102,7 +102,7 @@ public class Ball : Agent
     public override void OnActionReceived(ActionBuffers vectorAction)
     {
         //If not using AI, return
-        if(!useAI)
+        if (!useAI)
         {
             //Debug.LogWarning("The AI is not being used");
             return;
@@ -111,40 +111,40 @@ public class Ball : Agent
         //Decide how complex the NN is
         bool inp3Condition = vectorAction.ContinuousActions[0] >= 0.5 && behaviorParameters.BrainParameters.NumActions == 3;
         bool inp4Condition = vectorAction.ContinuousActions[0] != 0 && behaviorParameters.BrainParameters.NumActions == 4;
-        
+
         //Check if the AI wants to place a point
         if ((inp3Condition || inp4Condition) && !hasStarted && maxPoints > pointCount)
         {
             //Get the position the AI wants to place at
             float x = vectorAction.ContinuousActions[1];
             float y = vectorAction.ContinuousActions[2];
-            
+
             //Sets them to 0 if they are invalid numbers
             x = (float.IsNaN(x) || float.IsInfinity(x) || float.IsNegativeInfinity(x)) ? 0 : x;
             y = (float.IsNaN(y) || float.IsInfinity(y) || float.IsNegativeInfinity(y)) ? 0 : y;
-            
+
             //Adds the point and increments point counter
             gen.AddPoint(new Vector2(
-                gen.transform.position.x + x * placementBounds.x  + (transform.localPosition.x + endPosition.localPosition.x), 
-                gen.transform.position.y + y * placementBounds.y  + (transform.localPosition.y + endPosition.localPosition.y)
+                gen.transform.position.x + x * placementBounds.x + (transform.localPosition.x + endPosition.localPosition.x),
+                gen.transform.position.y + y * placementBounds.y + (transform.localPosition.y + endPosition.localPosition.y)
                 ));
             pointCount++;
         }
         //Else start the simulation if it hasn't already started
-        else if(!hasStarted)
+        else if (!hasStarted)
         {
             gen.StartSim();
             rb.gravityScale = 1;
         }
     }
-    
+
     //Called when the AI requests observations
     public override void CollectObservations(VectorSensor sensor)
     {
         //Add the ball positon and end position to the observations
         sensor.AddObservation(transform.position);
         sensor.AddObservation(endPosition.position);
-        
+
         /* Add last point postion */
         sensor.AddObservation(gen.LastPoint());
     }
@@ -153,7 +153,7 @@ public class Ball : Agent
     {
         if (!offLeftOrBottom && time < 10)
         {
-            if(time < bestTime)
+            if (time < bestTime)
             {
                 bestTime = time;
                 bestPoints = gen.GetPoints();
@@ -172,7 +172,8 @@ public class Ball : Agent
         if (offLeftOrBottom)
         {
             SetReward(-distance - 5);
-        } else if (l10Times.Count > 0)
+        }
+        else if (l10Times.Count > 0)
         {
             float averageTime = 0;
 
@@ -184,7 +185,8 @@ public class Ball : Agent
             if (time < 10f)
             {
                 SetReward(7 + averageTime - time);
-            } else
+            }
+            else
             {
                 SetReward(-distance);
             }
@@ -199,7 +201,8 @@ public class Ball : Agent
             if (time < 10)
             {
                 SetReward(1 / time);
-            } else
+            }
+            else
             {
                 SetReward(-distance);
             }
@@ -211,6 +214,12 @@ public class Ball : Agent
         {
             l10Times.Add(time);
             bestTimes.Add(new DataPoint<System.DateTime, float>(System.DateTime.Now, time));
+
+            if (bestTimes.Count > 100000)
+            {
+                WriteResults();
+                bestTimes = new List<DataPoint<System.DateTime, float>>();
+            }
         }
 
         time = 0;
@@ -234,26 +243,29 @@ public class Ball : Agent
         }
     }
 
-    private void QSortData<T, U>(List<DataPoint<T, U>> data, int min, int max) 
+    private void QSortData<T, U>(List<DataPoint<T, U>> data, int min, int max)
     where T : System.IComparable where U : System.IComparable
     {
-        if(min < max) {
+        if (min < max)
+        {
             int pivot = Partition<T, U>(data, min, max);
             QSortData(data, min, pivot);
             QSortData(data, pivot + 1, max);
         }
     }
 
-    private int Partition<T, U>(List<DataPoint<T, U>> data, int min, int max) 
+    private int Partition<T, U>(List<DataPoint<T, U>> data, int min, int max)
     where T : System.IComparable where U : System.IComparable
     {
         int swap = min;
         DataPoint<T, U> holder;
 
-        for(int i = min + 1; i < max; i++) {
-            if(data[i] < data[min]) {
+        for (int i = min + 1; i < max; i++)
+        {
+            if (data[i] < data[min])
+            {
                 swap++;
-                
+
                 holder = data[i];
                 data[i] = data[swap];
                 data[swap] = holder;
@@ -269,16 +281,28 @@ public class Ball : Agent
 
     private void WriteResults()
     {
-        Debug.Log("Writing results to output.txt");
-        using StreamWriter file = new StreamWriter("output.txt", append: true);
-        
+        Debug.Log("Writing results to output.txt & best.txt");
+        StreamWriter file = new StreamWriter("output.txt", append: true);
+
         string line = "";
 
-        foreach(var n in bestTimes) {
+        foreach (var n in bestTimes)
+        {
             line += n + "\n";
         }
 
         file.WriteLine(line);
+        file.Close();
+
+        file = new StreamWriter("best.txt");
+
+        line = "";
+        foreach (Vector2 point in bestPoints)
+        {
+            line += Functions.PointToString(point) + " ";
+        }
+
+        file.WriteLine(line.Substring(0, line.Length - 1));
         file.Close();
     }
 }
