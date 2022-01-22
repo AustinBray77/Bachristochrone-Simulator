@@ -20,7 +20,7 @@ public class Ball : Agent
     [SerializeField] private float maxPoints;
     [SerializeField] private Generator gen;
     [SerializeField] private Transform endPosition;
-    [SerializeField] private bool useAI;
+    public bool useAI;
     [SerializeField] private Vector2 bounds;
     [SerializeField] private List<Vector2> bestPoints;
 
@@ -294,13 +294,14 @@ public class Ball : Agent
         file.WriteLine(line);
         file.Close();
 
-        file = new StreamWriter("best.txt");
+        file = new StreamWriter("best.txt", append: true);
 
-        line = "";
+        line = bestTime.ToString() + "\n";
         foreach (Vector2 point in bestPoints)
         {
             line += Functions.PointToString(point) + " ";
         }
+        line += "\n";
 
         file.WriteLine(line.Substring(0, line.Length - 1));
         file.Close();

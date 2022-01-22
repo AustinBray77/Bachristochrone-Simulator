@@ -40,4 +40,7 @@ public static class Functions
 
         return output;
     }
+
+    public static float RoundToDecimalPlaces(float f, int places) =>
+        Mathf.Round(f * Mathf.Pow(10, places)) / Mathf.Pow(10, places);
 }

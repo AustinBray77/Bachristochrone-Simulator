@@ -286,7 +286,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -326,8 +326,10 @@ MonoBehaviour:
   scalingFactor: 450
   canvas: {fileID: 854803237}
   pointContainer: {fileID: 1134948352}
+  labelContainer: {fileID: 2002393547}
   point: {fileID: 6502956003008308062, guid: 330aac9032a25d24780b7fe527e61392, type: 3}
   line: {fileID: 5680878606417799519, guid: cb93df90eb1acfe4f96e8847d32aae77, type: 3}
+  label: {fileID: 1562158233740931008, guid: fee324b347785ff4fbdaf9d1ceb6deb1, type: 3}
 --- !u!1 &999113387
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,7 +446,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 50, y: 50}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2002393546
 GameObject:
@@ -476,10 +478,10 @@ RectTransform:
   m_Father: {fileID: 854803237}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 50, y: 50}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2024848489
 GameObject:

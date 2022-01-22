@@ -19,7 +19,8 @@ public class Generator : MonoBehaviour
     {
         //Creates an instance for the unassigned instance variables
         //Adds the first base point to the points list
-        points = new List<Vector2>() { ball.transform.position - new Vector3(0, 1) };
+        points = new List<Vector2>() { ball.transform.position - new Vector3(1, 1) };
+        //Instantiate(cube, ball.transform.position - new Vector3(2, 1), Quaternion.identity);
         pointsInstantiated = new List<GameObject>();
     }
 
@@ -27,7 +28,11 @@ public class Generator : MonoBehaviour
     public void StartSim()
     {
         //Generates the points from a list, and flags that the sim has started
-        GenerateFromList(points);
+        if (ball.useAI)
+        {
+            GenerateFromList(points);
+        }
+
         ball.hasStarted = true;
     }
 
@@ -35,13 +40,13 @@ public class Generator : MonoBehaviour
     public void EndSim()
     {
         //Removes each point from the list
-        while(points.Count > 0)
+        while (points.Count > 0)
         {
             points.RemoveAt(0);
         }
 
         //Destroys and removes each instantiated point
-        while(pointsInstantiated.Count > 0)
+        while (pointsInstantiated.Count > 0)
         {
             Destroy(pointsInstantiated[0]);
             pointsInstantiated.RemoveAt(0);
@@ -50,7 +55,6 @@ public class Generator : MonoBehaviour
         //Resets the two lists
         pointsInstantiated = new List<GameObject>();
         points = new List<Vector2>() { ball.transform.position - new Vector3(0, 1) };
-        Debug.Log(points[0]);
     }
 
     //Method called to add the point to the generator
@@ -58,19 +62,31 @@ public class Generator : MonoBehaviour
     {
         //Adds the point to the list
         points.Add(point);
+        //Instantiate(cube, point, Quaternion.identity);
+
+        if (!ball.useAI)
+        {
+            GenerateFrom2Points(points[points.Count - 2], points[points.Count - 1]);
+        }
     }
-    
+
     //Overloaded method for the one above, does the same thing but takes in two floats instead
     public void AddPoint(float x, float y)
     {
         points.Add(new Vector2(x, y));
+        //Instantiate(cube, new Vector2(x, y), Quaternion.identity);
+
+        if (!ball.useAI)
+        {
+            GenerateFrom2Points(points[points.Count - 2], points[points.Count - 1]);
+        }
     }
 
     //Method called to generate the lines corresponding to a list of points
     private void GenerateFromList(List<Vector2> points)
     {
         //Loops through every pair of points
-        for(int i = 0; i < points.Count - 1; i++)
+        for (int i = 0; i < points.Count - 1; i++)
         {
             //Generates a line between the pair of points
             GenerateFrom2Points(points[i], points[i + 1]);
@@ -104,13 +120,13 @@ public class Generator : MonoBehaviour
             GameObject next = Instantiate(cube, position, Quaternion.Euler(new Vector3(0, 0, -angle)));
 
             //Stretches the line to connect the points
-            next.transform.localScale = new Vector3(1, Vector3.Distance(point1, point2) * 1.25f);
+            next.transform.localScale = new Vector3(1, Vector3.Distance(point1, point2) + 1);
 
             //Adds the line to the list
             pointsInstantiated.Add(next);
         }
     }
-    
+
     //Method to get the points
     public List<Vector2> GetPoints() => points;
 
