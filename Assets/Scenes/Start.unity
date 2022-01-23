@@ -1587,6 +1587,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fade: {fileID: 118987715}
+  graphButton: {fileID: 441405777}
+  bestButton: {fileID: 113031898}
 --- !u!1 &1981501791
 GameObject:
   m_ObjectHideFlags: 0

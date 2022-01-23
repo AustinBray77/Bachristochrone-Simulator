@@ -21,7 +21,6 @@ public class Grapher : MonoBehaviour
     {
         try
         {
-
             string[] lines = File.ReadAllLines("output.txt");
 
             List<DataPoint<DateTime, float>> data = new List<DataPoint<DateTime, float>>();

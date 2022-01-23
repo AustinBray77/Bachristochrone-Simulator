@@ -50,8 +50,6 @@ public class Ball : Agent
         originalPosition = transform.position;
         placementBounds = new Vector2((transform.localPosition.x - endPosition.localPosition.x) / 2,
         (transform.localPosition.y - endPosition.localPosition.y) / 2);
-        Debug.Log(placementBounds.x + " " + placementBounds.y);
-        Debug.Log(SceneManager.GetActiveScene().name);
     }
 
     //Method called each frame
@@ -159,10 +157,17 @@ public class Ball : Agent
                 bestPoints = gen.GetPoints();
                 Debug.Log("New best time! Time:" + time);
 
+                StreamWriter file = new StreamWriter("best.txt", append: true);
+
+                string line = bestTime.ToString() + "\n";
                 foreach (Vector2 point in bestPoints)
                 {
-                    Debug.Log(point.x + ", " + point.y);
+                    line += Functions.PointToString(point) + " ";
                 }
+                line += "\n";
+
+                file.WriteLine(line.Substring(0, line.Length - 1));
+                file.Close();
             }
         }
 
@@ -292,18 +297,6 @@ public class Ball : Agent
         }
 
         file.WriteLine(line);
-        file.Close();
-
-        file = new StreamWriter("best.txt", append: true);
-
-        line = bestTime.ToString() + "\n";
-        foreach (Vector2 point in bestPoints)
-        {
-            line += Functions.PointToString(point) + " ";
-        }
-        line += "\n";
-
-        file.WriteLine(line.Substring(0, line.Length - 1));
         file.Close();
     }
 }
