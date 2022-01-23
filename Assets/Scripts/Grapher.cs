@@ -10,6 +10,7 @@ public class Grapher : MonoBehaviour
     [SerializeField] private float scalingFactor;
     [SerializeField] private Transform canvas, pointContainer, labelContainer;
     [SerializeField] private GameObject point, line, label;
+    [SerializeField] private TextMeshProUGUI bestTimes, worstTimes;
 
     private void Awake()
     {
@@ -34,6 +35,17 @@ public class Grapher : MonoBehaviour
 
             DrawTimeLineGraph(data);
             CreateLabels(data);
+
+            Functions.QSortData<DateTime, float>(data, 0, data.Count);
+
+            bestTimes.text = "Best Times:\n";
+            worstTimes.text = "Worst Times:\n";
+
+            for (int i = 0; i < 5; i++)
+            {
+                bestTimes.text += $"{i + 1}: {data[i].yValue} @ {data[i].xValue}\n";
+                worstTimes.text += $"{i + 1}: {data[data.Count - i - 1].yValue} @ {data[data.Count - i - 1].xValue}\n";
+            }
         }
         catch (Exception e)
         {
@@ -77,7 +89,9 @@ public class Grapher : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             points[i] = Instantiate(point, pointContainer);
-            points[i].transform.localPosition = new Vector3((float)((data[i].xValue - minX).TotalSeconds / (maxX - minX).TotalSeconds) * scalingFactor * (1920f / 1080f) * canvas.transform.localScale.x, (1080f / 1920f) * canvas.transform.localScale.y * scalingFactor * (data[i].yValue - minY) / (maxY - minY));
+            float x = (float)((data[i].xValue - minX).TotalSeconds / (maxX - minX).TotalSeconds) * scalingFactor * (1920f / 1080f) * canvas.transform.localScale.x,
+                y = (1080f / 1920f) * canvas.transform.localScale.y * scalingFactor * (data[i].yValue - minY) / (maxY - minY);
+            points[i].transform.localPosition = new Vector3(x, y);
 
             if (i > 0)
             {
@@ -85,10 +99,10 @@ public class Grapher : MonoBehaviour
                 lineObj.transform.localPosition = (points[i].transform.localPosition + points[i - 1].transform.localPosition) / 2;
                 lineObj.GetComponent<RectTransform>().sizeDelta = new Vector2(10, Vector3.Distance(points[i].transform.localPosition, points[i - 1].transform.localPosition));
 
-                float x = points[i].transform.localPosition.x - points[i - 1].transform.localPosition.x,
-                    y = points[i].transform.localPosition.y - points[i - 1].transform.localPosition.y;
+                float xDiff = points[i].transform.localPosition.x - points[i - 1].transform.localPosition.x,
+                    yDiff = points[i].transform.localPosition.y - points[i - 1].transform.localPosition.y;
 
-                lineObj.transform.rotation = Quaternion.Euler(0, 0, y != 0 ? Mathf.Rad2Deg * -Mathf.Atan(x / y) : 0);
+                lineObj.transform.rotation = Quaternion.Euler(0, 0, yDiff != 0 ? Mathf.Rad2Deg * -Mathf.Atan(xDiff / yDiff) : 0);
             }
         }
     }
@@ -117,7 +131,7 @@ public class Grapher : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             TextMeshProUGUI labelObj = Instantiate(label, labelContainer).GetComponent<TextMeshProUGUI>();
-            labelObj.transform.localPosition = new Vector2(i * (scalingFactor / 3f) * 1920 / 1080, -35);
+            labelObj.transform.localPosition = new Vector2(i * (scalingFactor / 3f) * 1920 / 1080 * canvas.transform.localScale.x, -50);
             labelObj.text = (minX.Add(TimeSpan.FromSeconds((maxX - minX).TotalSeconds / (4 - i)))).ToString();
         }
 
@@ -125,7 +139,7 @@ public class Grapher : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             TextMeshProUGUI labelObj = Instantiate(label, labelContainer).GetComponent<TextMeshProUGUI>();
-            labelObj.transform.localPosition = new Vector2(-25, i * (scalingFactor / 3f) * 1080 / 1920);
+            labelObj.transform.localPosition = new Vector2(-25, i * (scalingFactor / 3f) * 1080 / 1920 * canvas.transform.localScale.y);
             labelObj.text = Functions.RoundToDecimalPlaces((((maxY - minY) / (4 - i)) + minY), 2).ToString();
         }
     }

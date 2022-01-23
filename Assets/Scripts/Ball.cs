@@ -1,5 +1,4 @@
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
@@ -48,8 +47,9 @@ public class Ball : Agent
         behaviorParameters = GetComponent<BehaviorParameters>();
         rb.gravityScale = 0;
         originalPosition = transform.position;
-        placementBounds = new Vector2((transform.localPosition.x - endPosition.localPosition.x) / 2,
-        (transform.localPosition.y - endPosition.localPosition.y) / 2);
+        placementBounds = new Vector2(
+            (transform.localPosition.x - endPosition.localPosition.x) / 2,
+            (transform.localPosition.y - endPosition.localPosition.y) / 2);
     }
 
     //Method called each frame
@@ -246,42 +246,6 @@ public class Ball : Agent
         {
             WriteResults();
         }
-    }
-
-    private void QSortData<T, U>(List<DataPoint<T, U>> data, int min, int max)
-    where T : System.IComparable where U : System.IComparable
-    {
-        if (min < max)
-        {
-            int pivot = Partition<T, U>(data, min, max);
-            QSortData(data, min, pivot);
-            QSortData(data, pivot + 1, max);
-        }
-    }
-
-    private int Partition<T, U>(List<DataPoint<T, U>> data, int min, int max)
-    where T : System.IComparable where U : System.IComparable
-    {
-        int swap = min;
-        DataPoint<T, U> holder;
-
-        for (int i = min + 1; i < max; i++)
-        {
-            if (data[i] < data[min])
-            {
-                swap++;
-
-                holder = data[i];
-                data[i] = data[swap];
-                data[swap] = holder;
-            }
-        }
-
-        holder = data[min];
-        data[min] = data[swap];
-        data[swap] = holder;
-
-        return swap;
     }
 
     private void WriteResults()

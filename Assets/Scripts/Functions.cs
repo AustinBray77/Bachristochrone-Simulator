@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class Functions
@@ -43,4 +44,41 @@ public static class Functions
 
     public static float RoundToDecimalPlaces(float f, int places) =>
         Mathf.Round(f * Mathf.Pow(10, places)) / Mathf.Pow(10, places);
+
+    public static void QSortData<T, U>(List<DataPoint<T, U>> data, int min, int max)
+    where T : IComparable where U : IComparable
+    {
+        if (min < max)
+        {
+            int pivot = Partition<T, U>(data, min, max);
+            QSortData(data, min, pivot);
+            QSortData(data, pivot + 1, max);
+        }
+    }
+
+    public static int Partition<T, U>(List<DataPoint<T, U>> data, int min, int max)
+    where T : IComparable where U : IComparable
+    {
+        int swap = min;
+
+        for (int i = min + 1; i < max; i++)
+        {
+            if (data[i] < data[min])
+            {
+                swap++;
+
+                DataPoint<T, U> holder;
+                holder = data[i];
+                data[i] = data[swap];
+                data[swap] = holder;
+            }
+        }
+
+        DataPoint<T, U> hlder;
+        hlder = data[min];
+        data[min] = data[swap];
+        data[swap] = hlder;
+
+        return swap;
+    }
 }
