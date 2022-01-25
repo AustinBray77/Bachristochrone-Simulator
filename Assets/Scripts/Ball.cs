@@ -11,18 +11,23 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ball : Agent
 {
+    //Public visible instance variables
+    public bool useAI;
+
+    //Public non visible instance variables
     [HideInInspector] public bool hasStarted;
     [HideInInspector] public float time;
     [HideInInspector] public List<float> l10Times;
     [HideInInspector] public bool offLeftOrBottom;
 
+    //Private visible instance variables
     [SerializeField] private float maxPoints;
     [SerializeField] private Generator gen;
     [SerializeField] private Transform endPosition;
-    public bool useAI;
     [SerializeField] private Vector2 bounds;
     [SerializeField] private List<Vector2> bestPoints;
 
+    //Private non visible instance variables
     private Vector2 placementBounds;
     private BehaviorParameters behaviorParameters;
     private Rigidbody2D rb;
@@ -30,6 +35,7 @@ public class Ball : Agent
     private Vector3 originalPosition;
     private float bestTime;
 
+    //Static list to store the times the AI achieves.
     private static List<DataPoint<System.DateTime, float>> bestTimes;
 
     //Method called on scene instantiation
@@ -56,7 +62,7 @@ public class Ball : Agent
     private void Update()
     {
         //If the user hit space, start the simulation
-        if ((Input.GetKey(KeyCode.Space) || (SceneManager.GetActiveScene().name == "ExampleScene" && !useAI)) && !hasStarted)
+        if ((Input.GetKey(KeyCode.Space) || (SceneManager.GetActiveScene().name == "BestPath" && !useAI)) && !hasStarted)
         {
             //Starts the simulation
             gen.StartSim();
@@ -64,7 +70,7 @@ public class Ball : Agent
             rb.gravityScale = 1;
         }
         //If the user hit the left mouse button place a point
-        else if (Input.GetMouseButton(0))
+        else if (Input.GetMouseButton(0) && SceneManager.GetActiveScene().name != "BestPath" && !useAI)
         {
             //Converts mouse pos to world pos
             Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -139,127 +145,152 @@ public class Ball : Agent
     //Called when the AI requests observations
     public override void CollectObservations(VectorSensor sensor)
     {
+        //Return if AI is not being used
+        if (!useAI) return;
+
         //Add the ball positon and end position to the observations
         sensor.AddObservation(transform.position);
         sensor.AddObservation(endPosition.position);
 
-        /* Add last point postion */
+        //Adds last point postion
         sensor.AddObservation(gen.LastPoint());
     }
 
+    //Method to restart the training environment
     public void Restart()
     {
-        if (!offLeftOrBottom && time < 10)
-        {
-            if (time < bestTime)
-            {
-                bestTime = time;
-                bestPoints = gen.GetPoints();
-                Debug.Log("New best time! Time:" + time);
-
-                StreamWriter file = new StreamWriter("best.txt", append: true);
-
-                string line = bestTime.ToString() + "\n";
-                foreach (Vector2 point in bestPoints)
-                {
-                    line += Functions.PointToString(point) + " ";
-                }
-                line += "\n";
-
-                file.WriteLine(line.Substring(0, line.Length - 1));
-                file.Close();
-            }
-        }
-
+        //Sets the environment to have not started
         hasStarted = false;
-        float distance = Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position));
 
-        if (offLeftOrBottom)
+        //If AI is being used, calculated reward and write results
+        if (useAI)
         {
-            SetReward(-distance - 5);
-        }
-        else if (l10Times.Count > 0)
-        {
-            float averageTime = 0;
+            //Gets the distance from the current position to the end position
+            float distance = Mathf.Abs(Vector3.Distance(transform.position, endPosition.transform.position));
 
-            for (int i = 0; i < l10Times.Count; i++)
+            //If the ball is out of bounds set the reward to the negative distance minus 5
+            if (offLeftOrBottom)
             {
-                averageTime += l10Times[i];
+                SetReward(-distance - 5);
             }
-
-            if (time < 10f)
-            {
-                SetReward(7 + averageTime - time);
-            }
-            else
+            //Else if time is greater than or equal to 10, set the reward to the negative distance
+            else if (time >= 10f)
             {
                 SetReward(-distance);
             }
-
-            if (l10Times.Count == 10)
+            //Else if there are previous times to rank based off of
+            else if (l10Times.Count > 0)
             {
-                l10Times.RemoveAt(0);
+                //Calculates the mean time of the last ten times
+                float averageTime = 0;
+                for (int i = 0; i < l10Times.Count; i++)
+                {
+                    averageTime += l10Times[i];
+                }
+
+                //Set the reward to 7 plus the difference between the current time and average time (lower time is better)
+                SetReward(7 + averageTime - time);
+
+                //If l10 times is equal to ten items remove the least recent item
+                if (l10Times.Count == 10)
+                {
+                    l10Times.RemoveAt(0);
+                }
             }
-        }
-        else
-        {
-            if (time < 10)
+            //Else set the reward to the reciprocal of the time
+            else
             {
                 SetReward(1 / time);
             }
-            else
+
+            //End the AI episode
+            EndEpisode();
+
+            //If the ball does not travel out of bounds and completed the course in under ten seconds
+            if (!offLeftOrBottom && time < 10)
             {
-                SetReward(-distance);
+                //If the time is new best time
+                if (time < bestTime)
+                {
+                    //Set the best time and best points
+                    bestTime = time;
+                    bestPoints = gen.GetPoints();
+                    Debug.Log("New best time! Time:" + time);
+
+                    //Opens the best.txt to write to
+                    StreamWriter file = new StreamWriter("best.txt", append: true);
+
+                    //Adds the best time to the data to write
+                    string line = bestTime.ToString() + "\n";
+
+                    //Adds each points relative position to the generator to the data to write
+                    foreach (Vector2 point in bestPoints)
+                    {
+                        line += Functions.PointToString((Vector3)point - gen.transform.position) + " ";
+                    }
+                    //Replaces the last character with a end line
+                    line = line.Substring(0, line.Length - 1) + '\n';
+
+                    //Writes the data to the file and closes
+                    file.WriteLine(line);
+                    file.Close();
+                }
+
+                //Adds the time to l10 times and best times
+                l10Times.Add(time);
+                bestTimes.Add(new DataPoint<System.DateTime, float>(System.DateTime.Now, time));
+
+                //If best times has 100000 items, write the results and clear the cache by resetting the list
+                if (bestTimes.Count > 100000)
+                {
+                    WriteResults();
+                    bestTimes = new List<DataPoint<System.DateTime, float>>();
+                }
             }
         }
 
-        EndEpisode();
-
-        if (time < 10 && !offLeftOrBottom)
-        {
-            l10Times.Add(time);
-            bestTimes.Add(new DataPoint<System.DateTime, float>(System.DateTime.Now, time));
-
-            if (bestTimes.Count > 100000)
-            {
-                WriteResults();
-                bestTimes = new List<DataPoint<System.DateTime, float>>();
-            }
-        }
-
+        //Sets variables to their default values
         time = 0;
         pointCount = 0;
-
         offLeftOrBottom = false;
         transform.position = originalPosition;
 
+        //Tells the generator that the sim has ended
         gen.EndSim();
 
+        //Resets the rigidbody to its original state
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
         rb.velocity = new Vector2(0, 0);
     }
 
+    //Method called when the application is to be quit
     public void OnApplicationQuit()
     {
-        if (SceneManager.GetActiveScene().name != "ExampleScene")
+        //If the user is running the training scene, write the results
+        if (SceneManager.GetActiveScene().name != "SampleScene")
         {
             WriteResults();
         }
     }
 
+    //Method called to write the results to output.txt
     private void WriteResults()
     {
-        Debug.Log("Writing results to output.txt & best.txt");
+        Debug.Log("Writing results to output.txt");
+        //Opens the file, set to append data to the file
         StreamWriter file = new StreamWriter("output.txt", append: true);
 
+        //Variable for the data to write
         string line = "";
 
+        //Adds each data point to the data to write
         foreach (var n in bestTimes)
         {
             line += n + "\n";
         }
 
+        //Writes the data and closes the stream writer
         file.WriteLine(line);
         file.Close();
     }

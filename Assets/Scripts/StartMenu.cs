@@ -16,12 +16,12 @@ public class StartMenu : MonoBehaviour
     //loads each scene when the method is run 
     public void StartML()
     {
-        fade.FadeToLevel("SampleScene");
+        fade.FadeToLevel("AITraining");
     }
 
     public void BestResults()
     {
-        fade.FadeToLevel("ExampleScene");
+        fade.FadeToLevel("BestPath");
     }
 
     public void CustomPath()

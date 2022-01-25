@@ -1,6 +1,7 @@
 //Imports
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //Class used to generate the lines
 public class Generator : MonoBehaviour
@@ -18,9 +19,14 @@ public class Generator : MonoBehaviour
     private void Start()
     {
         //Creates an instance for the unassigned instance variables
-        //Adds the first base point to the points list
-        points = new List<Vector2>() { ball.transform.position - new Vector3(1, 1) };
-        //Instantiate(cube, ball.transform.position - new Vector3(2, 1), Quaternion.identity);
+        points = new List<Vector2>();
+
+        //If the AI is being used, add a point as a base starting point
+        if (ball.useAI)
+        {
+            points.Add(ball.transform.position - new Vector3(1, 1));
+        }
+
         pointsInstantiated = new List<GameObject>();
     }
 
@@ -39,6 +45,8 @@ public class Generator : MonoBehaviour
     //Method called to end the simulation
     public void EndSim()
     {
+        if (SceneManager.GetActiveScene().name == "BestPath") return;
+
         //Removes each point from the list
         while (points.Count > 0)
         {
@@ -54,7 +62,13 @@ public class Generator : MonoBehaviour
 
         //Resets the two lists
         pointsInstantiated = new List<GameObject>();
-        points = new List<Vector2>() { ball.transform.position - new Vector3(0, 1) };
+        points = new List<Vector2>();
+
+        //If the AI is being used, add a point as a base starting point
+        if (ball.useAI)
+        {
+            points.Add(ball.transform.position - new Vector3(1, 1));
+        }
     }
 
     //Method called to add the point to the generator
@@ -62,9 +76,9 @@ public class Generator : MonoBehaviour
     {
         //Adds the point to the list
         points.Add(point);
-        //Instantiate(cube, point, Quaternion.identity);
 
-        if (!ball.useAI)
+        //If AI is not being used, add draw line between the points
+        if (!ball.useAI && points.Count > 1)
         {
             GenerateFrom2Points(points[points.Count - 2], points[points.Count - 1]);
         }
@@ -73,10 +87,11 @@ public class Generator : MonoBehaviour
     //Overloaded method for the one above, does the same thing but takes in two floats instead
     public void AddPoint(float x, float y)
     {
+        //Adds the point to the list   
         points.Add(new Vector2(x, y));
-        //Instantiate(cube, new Vector2(x, y), Quaternion.identity);
 
-        if (!ball.useAI)
+        //If AI is not being used, add draw line between the points
+        if (!ball.useAI && points.Count > 1)
         {
             GenerateFrom2Points(points[points.Count - 2], points[points.Count - 1]);
         }
@@ -131,5 +146,5 @@ public class Generator : MonoBehaviour
     public List<Vector2> GetPoints() => points;
 
     //Method to get the last point
-    public Vector2 LastPoint() => points[0];
+    public Vector2 LastPoint() => points[points.Count - 1];
 }

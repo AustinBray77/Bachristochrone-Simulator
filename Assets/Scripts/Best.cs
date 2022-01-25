@@ -1,21 +1,22 @@
 using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class Best : MonoBehaviour
 {
     [SerializeField] private Ball straightestPath, bestAI;
+    [SerializeField] private Generator straightestGen, bestGen;
+    [SerializeField] private Transform straightestEnd;
 
-    private void Awake()
+    private IEnumerator Start()
     {
-        List<Vector2> points = LoadBestPoints();
+        yield return new WaitUntil(() => bestGen.GetPoints() != null);
+        LoadBestPoints();
     }
 
-    private List<Vector2> LoadBestPoints()
+    private void LoadBestPoints()
     {
-        List<Vector2> points = new List<Vector2>();
-
         try
         {
             string[] lines = File.ReadAllLines("best.txt");
@@ -29,7 +30,7 @@ public class Best : MonoBehaviour
                     i++;
                 }
 
-                float.TryParse(lines[0], out float time);
+                float.TryParse(lines[i], out float time);
 
                 if (time < bestTime)
                 {
@@ -42,18 +43,21 @@ public class Best : MonoBehaviour
 
             foreach (string point in spacedPoints)
             {
+                if (point == null || point == "" || point == "\n") continue;
+
                 string[] data = point.Split(',');
                 float.TryParse(data[0].Substring(1, data[0].Length - 1), out float x);
                 float.TryParse(data[1].Substring(0, data[1].Length - 1), out float y);
 
-                points.Add(new Vector2(x, y));
+                bestGen.AddPoint(new Vector3(x, y) + bestGen.transform.position);
             }
+
+            straightestGen.AddPoint(straightestPath.transform.position - new Vector3(1, 0));
+            straightestGen.AddPoint(straightestEnd.transform.position + new Vector3(1, -1));
         }
         catch (Exception e)
         {
             Debug.Log(e);
         }
-
-        return points;
     }
 }
