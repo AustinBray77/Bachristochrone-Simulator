@@ -3,7 +3,10 @@ guid: 1993ff31883b8e04a8b3104b9283d949
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - fade: {fileID: 3460196202228332758, guid: 2695a07b6ec352d4590071ceddf8c6d9, type: 3}
+  - graphButton: {instanceID: 0}
+  - bestButton: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
