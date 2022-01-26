@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using TMPro;
 
+//Class to generate the data graphs
 public class Grapher : MonoBehaviour
 {
     [SerializeField] private float scalingFactor;

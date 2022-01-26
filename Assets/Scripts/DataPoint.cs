@@ -5,7 +5,7 @@ using System;
 
 //Generic class to store a 2D data point (the yValue must be able to compare)
 [Serializable]
-public class DataPoint<T, U> where T : IComparable where U : IComparable
+public class DataPoint<T, U> /*Types must allow comparisons */ where T : IComparable where U : IComparable
 {
     //Instance Refrence For X and Y values (public get, private set)
     public T xValue { get; private set; }
@@ -23,19 +23,23 @@ public class DataPoint<T, U> where T : IComparable where U : IComparable
     {
         string[] vals = value.Split(',');
 
+        //If the inputted data is in the correct format, try and parse the data
         if (vals.Length >= 1)
         {
             xValue = Functions.TryGenericConversion<string, T>(vals[0]);
         }
+        //Else set the data to its types default value
         else
         {
             xValue = default(T);
         }
 
+        //If the inputted data is in the correct format, try and parse the data
         if (vals.Length >= 2)
         {
             yValue = Functions.TryGenericConversion<string, U>(vals[1]);
         }
+        //Else set the data to its types default value
         else
         {
             yValue = default(U);
