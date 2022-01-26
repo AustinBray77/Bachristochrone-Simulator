@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class StartMenu : MonoBehaviour
+public class StartMenu : UI
 {
     [SerializeField] private Button graphButton, bestButton;
     public Animator animator;
@@ -37,7 +37,8 @@ public class StartMenu : MonoBehaviour
         StartCoroutine(LoadLevel(3));
     }
 
-    IEnumerator LoadLevel(int i) {
+    IEnumerator LoadLevel(int i)
+    {
         animator.SetTrigger("Start");
 
         yield return new WaitForSeconds(1);
@@ -45,5 +46,8 @@ public class StartMenu : MonoBehaviour
         SceneManager.LoadScene(i);
     }
 
-
+    public override void Back()
+    {
+        StartCoroutine(LoadLevel(2));
+    }
 }

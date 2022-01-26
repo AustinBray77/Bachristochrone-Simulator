@@ -132,7 +132,7 @@ public class Grapher : MonoBehaviour
         {
             TextMeshProUGUI labelObj = Instantiate(label, labelContainer).GetComponent<TextMeshProUGUI>();
             labelObj.transform.localPosition = new Vector2(i * (scalingFactor / 3f) * 1920 / 1080 * canvas.transform.localScale.x, -50);
-            labelObj.text = (minX.Add(TimeSpan.FromSeconds((maxX - minX).TotalSeconds / (4 - i)))).ToString();
+            labelObj.text = (minX.Add(TimeSpan.FromSeconds((maxX - minX).TotalSeconds * (i / (float)3)))).ToString();
         }
 
         //Y labels
@@ -140,7 +140,7 @@ public class Grapher : MonoBehaviour
         {
             TextMeshProUGUI labelObj = Instantiate(label, labelContainer).GetComponent<TextMeshProUGUI>();
             labelObj.transform.localPosition = new Vector2(-25, i * (scalingFactor / 3f) * 1080 / 1920 * canvas.transform.localScale.y);
-            labelObj.text = Functions.RoundToDecimalPlaces((((maxY - minY) / (4 - i)) + minY), 2).ToString();
+            labelObj.text = Functions.RoundToDecimalPlaces(((maxY - minY) * (i / (float)3)) + minY, 2).ToString();
         }
     }
 }
