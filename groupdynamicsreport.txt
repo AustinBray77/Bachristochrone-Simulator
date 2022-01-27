@@ -1,0 +1,26 @@
+Group Dynamics Report
+Forming
+Surface level of politeness, small talk and limited personal disclosure can be considered not applicable, since both group members are already friends and familiar with each other. Since we were already comfortable with each other, we did not have to form any new relationships, frequently made jokes and were quickly able to agree on the concept of a user-drawn ramp that acts as the path for a ball. 
+
+Storming
+There were no power struggles or disagreements, and as a group we were able to agree on ideas that would contribute to the project. Personal agendas did emerge, but they were task-oriented and all group members maintained communication throughout the entire process of the project. For example, we originally had the idea of a drawable ramp but then changed to a machine learning AI. From that point, our personal agendas all contributed to the completion and functionality of the AI.
+Machine learning 
+
+Norming
+As a group, cooperative spirit, self disclosure and recognition of ideas was already present. The many ideas we had that were added are intended to improve the experience of the program for the user. A simple UI for easy use, a graphing system that takes data to be graphed, and a scene to view the best path of the AI are all examples of ideas we came up with and incorporated into the project. 
+
+Performing
+The performing stage went smoothly, as we continued to work towards the end product and effectively deal with any problems that arose, all while having fun. For example, after a few days of testing the AI simulation, it was noticed that every output in the output.txt would be rounded to thirds. Both sides provided input on how to solve the problem caused by the project timestep and timescale and the outputs are no longer rounded to thirds. 
+
+
+Adjourning
+The adjourning stage in the development of this program was a sense of satisfaction among all members, and we were able to acknowledge each member’s contribution and the execution of the program. 
+
+Contributions:
+Austin:
+Main Programmer
+Programmed how the AI functions and the training of the AI
+Rizoan:
+Main Graphics Designer
+Ran the AI simulations
+Programmed the scene changes and menu UI

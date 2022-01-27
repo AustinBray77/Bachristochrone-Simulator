@@ -30,7 +30,7 @@ public class StartMenu : UI
     //Method to load the best results scene
     public void BestResults()
     {
-        StartCoroutine(LoadLevel(0));
+        StartCoroutine(LoadLevel(2));
     }
 
     //Method to load the custom path scene
@@ -59,6 +59,6 @@ public class StartMenu : UI
     //Overriden method to go back to the start scene
     public override void Back()
     {
-        StartCoroutine(LoadLevel(2));
+        StartCoroutine(LoadLevel(0));
     }
 }

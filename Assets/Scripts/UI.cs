@@ -10,6 +10,10 @@ public class UI : MonoBehaviour
     public virtual void Back()
     {
         //Loads the start scene
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(0);
     }
+
+    //Base method to quit the program
+    public virtual void Quit() =>
+        Application.Quit();
 }
